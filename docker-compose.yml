@@ -1,32 +1,35 @@
 version: '3.8'
 
 services:
-  mysql:
-    image: mysql:8
-    container_name: mysql-db
-    restart: always
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: eventflow
-      MYSQL_USER: user
-      MYSQL_PASSWORD: password
+  eureka-server:
+    build: ./untitled
     ports:
-      - "3306:3306"
-    volumes:
-      - mysql_data:/var/lib/mysql
+      - "8761:8761"
+    networks:
+      - microservices-network
 
-  comments-service:
-    build: .
-    container_name: comments-service
-    restart: always
-    depends_on:
-      - mysql
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/eventflow
-      SPRING_DATASOURCE_USERNAME: user
-      SPRING_DATASOURCE_PASSWORD: password
+  comment-service:
+    build: ./comments-service
     ports:
       - "8089:8089"
+    depends_on:
+      - untitled
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://untitled:8761/eureka/
+    networks:
+      - microservices-network
 
-volumes:
-  mysql_data:
+  api-gateway:
+    build: ./Gateway
+    ports:
+      - "8080:8080"
+    depends_on:
+      - untitled
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://untitled:8761/eureka/
+    networks:
+      - microservices-network
+
+networks:
+  microservices-network:
+    driver: bridge

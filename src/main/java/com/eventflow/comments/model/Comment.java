@@ -6,23 +6,39 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class Comment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long userId;
-    private Long eventId;
-
-    @Column(nullable = false, length = 1000)
-    private String content;
+    private String text; // ✅ Assure-toi que cet attribut existe
 
     private int likes = 0;
     private int dislikes = 0;
 
-    private LocalDateTime createdAt = LocalDateTime.now();
+    // ✅ Ajoute les getters et setters
+    public String getText() {
+        return text;
+    }
+
+    public void setText(String text) {
+        this.text = text;
+    }
+
+    public int getLikes() {
+        return likes;
+    }
+
+    public void setLikes(int likes) {
+        this.likes = likes;
+    }
+
+    public int getDislikes() {
+        return dislikes;
+    }
+
+    public void setDislikes(int dislikes) {
+        this.dislikes = dislikes;
+    }
 }

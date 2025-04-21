@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8
+    container_name: eventflow-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD:
+      MYSQL_DATABASE: eventflow
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - eventflow-network
+
+  eureka-server:
+    image: eurekaserver:latest
+    container_name: eureka-server
+    build:
+      context: ./eureka-server
+    ports:
+      - "8761:8761"
+    networks:
+      - eventflow-network
+
+  comments-service:
+    build:
+      context: ./comments-service
+    container_name: comments-service
+    depends_on:
+      - mysql
+      - eureka-server
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/eventflow?createDatabaseIfNotExist=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD:
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE: http://eureka-server:8761/eureka/
+    ports:
+      - "8089:8089"
+    networks:
+      - eventflow-network
+
+volumes:
+  mysql_data:
+
+networks:
+  eventflow-network:

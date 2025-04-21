@@ -1,0 +1,15 @@
+    <div class="container">
+        <h2>Commentaires</h2>
+    
+        <div class="add-comment">
+        <input [(ngModel)]="newComment" placeholder="Écris un commentaire..." />
+        <button (click)="addComment()">Ajouter</button>
+        </div>
+    
+        <div *ngFor="let comment of comments" class="comment">
+        <p>{{ comment.text }}</p>
+        <button (click)="like(comment.id!)">👍 {{ comment.likes }}</button>
+        <button (click)="dislike(comment.id!)">👎 {{ comment.dislikes }}</button>
+        </div>
+    </div>
+    
